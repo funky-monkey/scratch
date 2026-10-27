@@ -32,3 +32,39 @@ export function cleanTitle(title: string | undefined): string {
     .trim();
   return cleaned || "Untitled";
 }
+
+/** Short "last modified" label: time today, "Yesterday", "3 days ago", then a date. */
+export function formatNoteDate(timestamp: number): string {
+  const date = new Date(timestamp * 1000);
+  const now = new Date();
+
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate()
+  );
+  const startOfYesterday = new Date(startOfToday.getTime() - 86400000);
+
+  if (date >= startOfToday) {
+    return date.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+  }
+  if (date >= startOfYesterday) {
+    return "Yesterday";
+  }
+
+  const daysAgo =
+    Math.floor((startOfToday.getTime() - date.getTime()) / 86400000) + 1;
+  if (daysAgo <= 6) {
+    return `${daysAgo} days ago`;
+  }
+
+  if (date.getFullYear() === now.getFullYear()) {
+    return date.toLocaleDateString([], { month: "short", day: "numeric" });
+  }
+
+  return date.toLocaleDateString([], {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
+}

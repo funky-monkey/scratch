@@ -10,7 +10,7 @@ import {
   type TreeItem,
 } from "../../lib/folderTree";
 import { FolderNameDialog } from "./FolderNameDialog";
-import { cleanTitle } from "../../lib/utils";
+import { cleanTitle, formatNoteDate } from "../../lib/utils";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -211,8 +211,13 @@ const FileItem = memo(function FileItem({
             ) : (
               <NoteIcon className="w-4 h-4 stroke-[1.6] opacity-50 shrink-0" />
             )}
-            <span className="text-sm text-text truncate">
+            <span
+              className={`text-sm text-text truncate ${isSelected ? "font-semibold" : ""}`}
+            >
               {cleanTitle(note.title)}
+            </span>
+            <span className="ml-auto pl-2 text-xs text-text-muted shrink-0 tabular-nums">
+              {formatNoteDate(note.modified)}
             </span>
           </div>
         </div>
