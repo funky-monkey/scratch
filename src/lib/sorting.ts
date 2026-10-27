@@ -50,7 +50,7 @@ export const SORT_STRATEGIES: Record<SortOrder, SortStrategy> = {
 export const DEFAULT_SORT_ORDER: SortOrder = "modified-desc";
 
 export function getSortStrategy(sortOrder?: string | null): SortStrategy {
-  if (sortOrder && Object.hasOwn(SORT_STRATEGIES, sortOrder)) {
+  if (sortOrder && Object.prototype.hasOwnProperty.call(SORT_STRATEGIES, sortOrder)) {
     return SORT_STRATEGIES[sortOrder as SortOrder];
   }
   return SORT_STRATEGIES[DEFAULT_SORT_ORDER];
