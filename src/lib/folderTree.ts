@@ -1,19 +1,22 @@
-import type { NoteMetadata, FolderNode } from "../types/note";
+import type { AttachmentMetadata, NoteMetadata, FolderNode } from "../types/note";
 import { getSortStrategy } from "./sorting";
 
 export interface FolderTreeData {
   rootNotes: NoteMetadata[];
+  rootAttachments: AttachmentMetadata[];
   folders: FolderNode[];
 }
 
 export function buildFolderTree(
   notes: NoteMetadata[],
+  attachments: AttachmentMetadata[],
   pinnedIds: Set<string>,
   knownFolders?: string[],
   sortOrder?: string,
 ): FolderTreeData {
   const strategy = getSortStrategy(sortOrder);
   const rootNotes: NoteMetadata[] = [];
+  const rootAttachments: AttachmentMetadata[] = [];
   const folderMap = new Map<string, FolderNode>();
 
   function ensureFolder(path: string): FolderNode {
@@ -22,7 +25,7 @@ export function buildFolderTree(
 
     const parts = path.split("/");
     const name = parts[parts.length - 1];
-    const node: FolderNode = { name, path, children: [], notes: [] };
+    const node: FolderNode = { name, path, children: [], notes: [], attachments: [] };
     folderMap.set(path, node);
 
     if (parts.length > 1) {
@@ -54,6 +57,17 @@ export function buildFolderTree(
     }
   }
 
+  for (const attachment of attachments) {
+    const lastSlash = attachment.id.lastIndexOf("/");
+    if (lastSlash === -1) {
+      rootAttachments.push(attachment);
+    } else {
+      const folderPath = attachment.id.substring(0, lastSlash);
+      const folder = ensureFolder(folderPath);
+      folder.attachments.push(attachment);
+    }
+  }
+
   const folderComparator =
     strategy.compareFolders || ((a: FolderNode, b: FolderNode) => a.name.localeCompare(b.name));
 
@@ -65,6 +79,7 @@ export function buildFolderTree(
       if (ap !== bp) return ap ? -1 : 1;
       return strategy.compareNotes(a, b);
     });
+    node.attachments.sort((a, b) => a.name.localeCompare(b.name));
     node.children.forEach(sortNode);
   }
 
@@ -81,12 +96,14 @@ export function buildFolderTree(
     if (ap !== bp) return ap ? -1 : 1;
     return strategy.compareNotes(a, b);
   });
+  rootAttachments.sort((a, b) => a.name.localeCompare(b.name));
 
-  return { rootNotes, folders: topLevelFolders };
+  return { rootNotes, rootAttachments, folders: topLevelFolders };
 }
 
 export type TreeItem =
   | { type: "note"; id: string }
+  | { type: "attachment"; id: string }
   | { type: "folder"; path: string };
 
 /** Build a flat list of visible tree items in DFS order (for keyboard navigation). */
@@ -114,6 +131,9 @@ export function getVisibleItems(
       for (const note of folder.notes) {
         items.push({ type: "note", id: note.id });
       }
+      for (const attachment of folder.attachments) {
+        items.push({ type: "attachment", id: attachment.id });
+      }
     }
   }
   for (const folder of tree.folders) {
@@ -126,12 +146,15 @@ export function getVisibleItems(
       items.push({ type: "note", id: note.id });
     }
   }
+  for (const attachment of tree.rootAttachments) {
+    items.push({ type: "attachment", id: attachment.id });
+  }
 
   return items;
 }
 
 export function countNotesInFolder(folder: FolderNode): number {
-  let count = folder.notes.length;
+  let count = folder.notes.length + folder.attachments.length;
   for (const child of folder.children) {
     count += countNotesInFolder(child);
   }
