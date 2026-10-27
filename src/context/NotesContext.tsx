@@ -172,6 +172,17 @@ export function NotesProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
+  // Settings can be saved from anywhere (settings page, AI panels, ...);
+  // the backend announces each save so this copy never goes stale.
+  useEffect(() => {
+    const unlisten = listen("settings-updated", () => {
+      refreshSettings();
+    });
+    return () => {
+      unlisten.then((fn) => fn());
+    };
+  }, [refreshSettings]);
+
   // Debounced refresh - coalesces rapid saves into a single refresh
   const scheduleRefresh = useCallback(() => {
     if (refreshTimeoutRef.current) {

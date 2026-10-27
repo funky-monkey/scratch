@@ -2183,6 +2183,7 @@ fn get_settings(state: State<AppState>) -> Settings {
 #[tauri::command]
 fn update_settings(
     new_settings: Settings,
+    app: AppHandle,
     state: State<AppState>,
 ) -> Result<(), String> {
     let folder = {
@@ -2195,8 +2196,14 @@ fn update_settings(
         *settings = new_settings;
     }
 
-    let settings = state.settings.read().expect("settings read lock");
-    save_settings(&folder, &settings).map_err(|e| e.to_string())?;
+    {
+        let settings = state.settings.read().expect("settings read lock");
+        save_settings(&folder, &settings).map_err(|e| e.to_string())?;
+    }
+
+    // Settings are written from many places (settings page, AI panels,
+    // sidebar); tell every window so cached copies stay current.
+    let _ = app.emit("settings-updated", ());
 
     Ok(())
 }
