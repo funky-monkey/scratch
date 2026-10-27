@@ -149,7 +149,7 @@ echo "- milk" | scratch new "Shopping list" --folder Home --open
 pbpaste | scratch new                    # title taken from the first heading or line
 
 echo "- bread" | scratch edit "Shopping list" --append
-cat draft.md | scratch edit Home/Shopping-list   # replace the whole note
+cat draft.md | scratch edit "Home/Shopping list"  # replace the whole note
 scratch edit "Shopping list"             # open it in $EDITOR
 
 scratch rm "Shopping list"               # asks first; -f skips the question
