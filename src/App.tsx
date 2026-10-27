@@ -64,6 +64,8 @@ function AppContent() {
     reloadCurrentNote,
     currentNote,
     syncNotesFolder,
+    goBack,
+    goForward,
   } = useNotes();
   const { interfaceZoom, setInterfaceZoom, reloadSettings } = useTheme();
   const interfaceZoomRef = useRef(interfaceZoom);
@@ -376,6 +378,20 @@ function AppContent() {
         return;
       }
 
+      // Cmd+[ - Navigate back
+      if ((e.metaKey || e.ctrlKey) && e.key === "[") {
+        e.preventDefault();
+        goBack();
+        return;
+      }
+
+      // Cmd+] - Navigate forward
+      if ((e.metaKey || e.ctrlKey) && e.key === "]") {
+        e.preventDefault();
+        goForward();
+        return;
+      }
+
       // Arrow keys for note navigation
       // Skip if folder tree view is handling its own navigation
       const isInFolderTree = !!(e.target as HTMLElement).closest("[data-folder-tree]");
@@ -457,6 +473,8 @@ function AppContent() {
     focusMode,
     view,
     setInterfaceZoom,
+    goBack,
+    goForward,
   ]);
 
   const handleClosePalette = useCallback(() => {

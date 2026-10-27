@@ -114,6 +114,8 @@ import {
   MarkdownOffIcon,
   FolderPlusIcon,
   SparklesIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
 } from "../icons";
 import { AiSelectionModal } from "../ai/AiSelectionModal";
 
@@ -712,6 +714,10 @@ export function Editor({
   const pinNote = notesCtx?.pinNote;
   const unpinNote = notesCtx?.unpinNote;
   const notes = notesCtx?.notes;
+  const canGoBack = notesCtx?.canGoBack ?? false;
+  const canGoForward = notesCtx?.canGoForward ?? false;
+  const goBack = notesCtx?.goBack;
+  const goForward = notesCtx?.goForward;
   const { textDirection, spellCheckEnabled, autoCorrectEnabled, pasteMode } =
     useTheme();
   const [isSaving, setIsSaving] = useState(false);
@@ -2577,6 +2583,26 @@ export function Editor({
               className="shrink-0"
             >
               <PanelLeftIcon className="w-4.5 h-4.5 stroke-[1.5]" />
+            </IconButton>
+          )}
+          {goBack && (
+            <IconButton
+              onClick={goBack}
+              title={`Navigate back (${mod}${isMac ? "" : "+"}[)`}
+              className="shrink-0"
+              disabled={!canGoBack}
+            >
+              <ArrowLeftIcon className="w-4.5 h-4.5 stroke-[1.5]" />
+            </IconButton>
+          )}
+          {goForward && (
+            <IconButton
+              onClick={goForward}
+              title={`Navigate forward (${mod}${isMac ? "" : "+"}])`}
+              className="shrink-0"
+              disabled={!canGoForward}
+            >
+              <ArrowRightIcon className="w-4.5 h-4.5 stroke-[1.5]" />
             </IconButton>
           )}
           <span className="text-xs text-text-muted mb-px truncate">
