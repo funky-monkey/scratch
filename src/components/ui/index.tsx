@@ -137,7 +137,7 @@ interface ListItemProps {
   isSelected?: boolean;
   isPinned?: boolean;
   onClick?: () => void;
-  /** Optional status icon to display next to meta */
+  className?: string;
 }
 
 export function ListItem({
@@ -149,6 +149,7 @@ export function ListItem({
   isPinned = false,
   onClick,
   onContextMenu,
+  className,
 }: ListItemProps & { onContextMenu?: (e: React.MouseEvent) => void }) {
   // Clean subtitle: treat whitespace-only or &nbsp; as empty
   const cleanSubtitle = subtitle
@@ -169,6 +170,7 @@ export function ListItem({
         isSelected
           ? "bg-bg-muted group-focus/notelist:ring-1 group-focus/notelist:ring-text-muted"
           : "hover:bg-bg-muted",
+        className
       )}
     >
       <div className="flex items-center justify-between gap-2">

@@ -38,6 +38,13 @@ export const SORT_STRATEGIES: Record<SortOrder, SortStrategy> = {
     compareNotes: (a, b) => a.modified - b.modified,
     compareFolders: (a, b) => naturalCompare(a.name, b.name),
   },
+  manual: {
+    id: "manual",
+    label: "Manual (Drag and Drop)",
+    description: "Drag notes and folders into your own order",
+    compareNotes: (a, b) => b.modified - a.modified,
+    compareFolders: (a, b) => naturalCompare(a.name, b.name),
+  },
   "title-desc": {
     id: "title-desc",
     label: "Alphabetical (Z–A)",
@@ -54,4 +61,22 @@ export function getSortStrategy(sortOrder?: string | null): SortStrategy {
     return SORT_STRATEGIES[sortOrder as SortOrder];
   }
   return SORT_STRATEGIES[DEFAULT_SORT_ORDER];
+}
+
+// Items in the manual order come first in that order; the rest fall back.
+export function withManualOrder<T>(
+  order: string[] | undefined,
+  key: (item: T) => string,
+  fallback: (a: T, b: T) => number,
+): (a: T, b: T) => number {
+  if (!order || order.length === 0) return fallback;
+  const index = new Map(order.map((id, i) => [id, i]));
+  return (a, b) => {
+    const ai = index.get(key(a));
+    const bi = index.get(key(b));
+    if (ai !== undefined && bi !== undefined) return ai - bi;
+    if (ai !== undefined) return -1;
+    if (bi !== undefined) return 1;
+    return fallback(a, b);
+  };
 }

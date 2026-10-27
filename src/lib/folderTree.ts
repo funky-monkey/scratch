@@ -1,5 +1,5 @@
 import type { AttachmentMetadata, NoteMetadata, FolderNode } from "../types/note";
-import { getSortStrategy } from "./sorting";
+import { getSortStrategy, withManualOrder } from "./sorting";
 
 export interface FolderTreeData {
   rootNotes: NoteMetadata[];
@@ -13,8 +13,14 @@ export function buildFolderTree(
   pinnedIds: Set<string>,
   knownFolders?: string[],
   sortOrder?: string,
+  noteOrder?: string[],
+  folderOrder?: string[],
 ): FolderTreeData {
   const strategy = getSortStrategy(sortOrder);
+  const manual = strategy.id === "manual";
+  const compareNotes = manual
+    ? withManualOrder<NoteMetadata>(noteOrder, (n) => n.id, strategy.compareNotes)
+    : strategy.compareNotes;
   const rootNotes: NoteMetadata[] = [];
   const rootAttachments: AttachmentMetadata[] = [];
   const folderMap = new Map<string, FolderNode>();
@@ -68,8 +74,11 @@ export function buildFolderTree(
     }
   }
 
-  const folderComparator =
+  const baseFolderComparator =
     strategy.compareFolders || ((a: FolderNode, b: FolderNode) => a.name.localeCompare(b.name));
+  const folderComparator = manual
+    ? withManualOrder<FolderNode>(folderOrder, (f) => f.path, baseFolderComparator)
+    : baseFolderComparator;
 
   function sortNode(node: FolderNode) {
     node.children.sort(folderComparator);
@@ -77,7 +86,7 @@ export function buildFolderTree(
       const ap = pinnedIds.has(a.id);
       const bp = pinnedIds.has(b.id);
       if (ap !== bp) return ap ? -1 : 1;
-      return strategy.compareNotes(a, b);
+      return compareNotes(a, b);
     });
     node.attachments.sort((a, b) => a.name.localeCompare(b.name));
     node.children.forEach(sortNode);
@@ -94,7 +103,7 @@ export function buildFolderTree(
     const ap = pinnedIds.has(a.id);
     const bp = pinnedIds.has(b.id);
     if (ap !== bp) return ap ? -1 : 1;
-    return strategy.compareNotes(a, b);
+    return compareNotes(a, b);
   });
   rootAttachments.sort((a, b) => a.name.localeCompare(b.name));
 

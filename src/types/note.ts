@@ -32,7 +32,12 @@ export interface ThemeSettings {
 export type FontFamily = "system-sans" | "serif" | "monospace";
 export type TextDirection = "auto" | "ltr" | "rtl";
 export type EditorWidth = "narrow" | "normal" | "wide" | "full" | "custom";
-export type SortOrder = "title-asc" | "title-desc" | "modified-desc" | "modified-asc";
+export type SortOrder =
+  | "title-asc"
+  | "title-desc"
+  | "modified-desc"
+  | "modified-asc"
+  | "manual";
 export type PasteMode = "markdown" | "plain" | "code-block";
 
 export interface EditorFontSettings {
@@ -81,6 +86,8 @@ export interface Settings {
   customColorsLight?: CustomColors;
   customColorsDark?: CustomColors;
   pasteMode?: PasteMode;
+  noteOrder?: string[];
+  folderOrder?: string[];
 }
 
 export interface FolderNode {
