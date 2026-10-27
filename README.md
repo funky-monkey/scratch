@@ -1,4 +1,4 @@
-# Scratch
+# Scratch Plus
 
 <img src="docs/app-icon.png" alt="Scratch" width="128" height="128" style="border-radius: 22px; margin-bottom: 8px;">
 
@@ -8,7 +8,7 @@ A minimalist, offline-first markdown note-taking app for macOS, Windows, and Lin
 
 [Website](https://www.ericli.io/scratch) · [Releases](https://github.com/erictli/scratch/releases)
 
-> **This is a community fork** of [erictli/scratch](https://github.com/erictli/scratch) that merges open pull requests from the upstream repository. See [What this fork adds](#what-this-fork-adds) for the list.
+> **Scratch Plus is a community fork** of [erictli/scratch](https://github.com/erictli/scratch) that merges open pull requests from the upstream repository. See [What this fork adds](#what-this-fork-adds) for the list.
 
 ## Features
 

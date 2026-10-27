@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Scratch",
-  "version": "1.0.0",
-  "identifier": "com.scratch.app",
+  "productName": "Scratch Plus",
+  "version": "1.1.0",
+  "identifier": "nl.funky-monkey.scratch-plus",
   "build": {
     "beforeDevCommand": "npm run dev",
     "devUrl": "http://localhost:1420",
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Scratch",
+        "title": "Scratch Plus",
         "width": 1080,
         "height": 720,
         "minWidth": 600,

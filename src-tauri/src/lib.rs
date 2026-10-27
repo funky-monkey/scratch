@@ -4471,7 +4471,7 @@ fn create_preview_window(app: &AppHandle, file_path: &str) -> Result<(), String>
     let url = format!("index.html?mode=preview&file={}", encoded_path);
 
     let builder = WebviewWindowBuilder::new(app, &label, WebviewUrl::App(url.into()))
-        .title(format!("{} — Scratch", filename))
+        .title(format!("{} — Scratch Plus", filename))
         .inner_size(800.0, 600.0)
         .min_inner_size(400.0, 300.0)
         .resizable(true)
