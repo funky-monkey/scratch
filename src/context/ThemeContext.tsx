@@ -17,6 +17,7 @@ import type {
   EditorWidth,
   CustomColors,
   ThemeColorKey,
+  PasteMode,
 } from "../types/note";
 
 type ThemeMode = "light" | "dark" | "system";
@@ -125,6 +126,8 @@ interface ThemeContextType {
   setCustomColor: (mode: "light" | "dark", key: ThemeColorKey, value: string) => void;
   resetCustomColor: (mode: "light" | "dark", key: ThemeColorKey) => void;
   resetAllCustomColors: (mode: "light" | "dark") => void;
+  pasteMode: PasteMode;
+  setPasteMode: (mode: PasteMode) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | null>(null);
@@ -200,6 +203,7 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
   const [sidebarWidthPx, setSidebarWidthPxState] = useState<number | null>(null);
   const [customColorsLight, setCustomColorsLightState] = useState<CustomColors>({});
   const [customColorsDark, setCustomColorsDarkState] = useState<CustomColors>({});
+  const [pasteMode, setPasteModeState] = useState<PasteMode>("markdown");
   const [isInitialized, setIsInitialized] = useState(false);
 
   const [systemTheme, setSystemTheme] = useState<"light" | "dark">(() => {
@@ -270,6 +274,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       }
       if (settings.customColorsDark) {
         setCustomColorsDarkState(settings.customColorsDark);
+      }
+      if (
+        settings.pasteMode === "markdown" ||
+        settings.pasteMode === "plain" ||
+        settings.pasteMode === "code-block"
+      ) {
+        setPasteModeState(settings.pasteMode);
       }
     } catch {
       // If settings can't be loaded, use defaults
@@ -637,6 +648,16 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
     [],
   );
 
+  const setPasteMode = useCallback(async (mode: PasteMode) => {
+    setPasteModeState(mode);
+    try {
+      const settings = await getSettings();
+      await updateSettings({ ...settings, pasteMode: mode });
+    } catch (error) {
+      console.error("Failed to save paste mode:", error);
+    }
+  }, []);
+
   // Live CSS variable update during drag (no persistence)
   const setEditorMaxWidthLive = useCallback((value: string) => {
     document.documentElement.style.setProperty("--editor-max-width", value);
@@ -684,6 +705,8 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
         setCustomColor,
         resetCustomColor,
         resetAllCustomColors,
+        pasteMode,
+        setPasteMode,
       }}
     >
       {children}

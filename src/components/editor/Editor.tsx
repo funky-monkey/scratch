@@ -614,7 +614,8 @@ export function Editor({
   const pinNote = notesCtx?.pinNote;
   const unpinNote = notesCtx?.unpinNote;
   const notes = notesCtx?.notes;
-  const { textDirection, spellCheckEnabled, autoCorrectEnabled } = useTheme();
+  const { textDirection, spellCheckEnabled, autoCorrectEnabled, pasteMode } =
+    useTheme();
   const [isSaving, setIsSaving] = useState(false);
   // Force re-render when selection changes to update toolbar active states
   const [, setSelectionKey] = useState(0);
@@ -1319,17 +1320,42 @@ export function Editor({
         const text = markdownText || clipboardData.getData("text/plain");
         if (!text) return false;
 
-        // Plain text still supports pasting Markdown copied from other apps.
-        const markdownPatterns =
-          /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^\s*>\s|```|^\s*\[.*\]\(.*\)|^\s*!\[|\*\*.*\*\*|__.*__|~~.*~~|^\s*[-*_]{3,}\s*$|^\|.+\||\$\$[\s\S]+?\$\$/m;
-        if (!markdownText && !markdownPatterns.test(text)) {
-          // Not markdown, let TipTap handle it normally
+        const currentEditor = editorRef.current;
+        if (!currentEditor) return false;
+
+        // Paste as plain text — strip all markdown formatting
+        if (pasteMode === "plain") {
+          currentEditor.commands.insertContent(
+            text.replace(/\r\n/g, "\n"),
+            { parseOptions: { preserveWhitespace: "full" } },
+          );
+          return true;
+        }
+
+        // Paste as code block wrapped in ``` ```
+        if (pasteMode === "code-block") {
+          const manager = currentEditor.storage.markdown?.manager;
+          if (manager && typeof manager.parse === "function") {
+            try {
+              const fenced = "```\n" + text + "\n```";
+              const parsed = manager.parse(fenced);
+              if (parsed) {
+                currentEditor.commands.insertContent(parsed);
+                return true;
+              }
+            } catch {
+              // fall through to default
+            }
+          }
           return false;
         }
 
-        // Parse markdown and insert using editor ref
-        const currentEditor = editorRef.current;
-        if (!currentEditor) return false;
+        // Default: "markdown" — detect and parse markdown patterns (plain text still supports pasting Markdown copied from other apps)
+        const markdownPatterns =
+          /^#{1,6}\s|^\s*[-*+]\s|^\s*\d+\.\s|^\s*>\s|```|^\s*\[.*\]\(.*\)|^\s*!\[|\*\*.*\*\*|__.*__|~~.*~~|^\s*[-*_]{3,}\s*$|^\|.+\||\$\$[\s\S]+?\$\$/m;
+        if (!markdownText && !markdownPatterns.test(text)) {
+          return false;
+        }
 
         const manager = currentEditor.storage.markdown?.manager;
         if (manager && typeof manager.parse === "function") {
