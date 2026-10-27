@@ -51,6 +51,7 @@ Merged from open upstream pull requests:
 - **Clipboard formats** - Copying puts both plain text and Markdown on the clipboard, so other apps paste it correctly ([#193](https://github.com/erictli/scratch/pull/193))
 - **Spell check and autocorrect settings** - Turn either on or off ([#206](https://github.com/erictli/scratch/pull/206))
 - **Custom commit messages** - Write your own message when committing with Git ([#157](https://github.com/erictli/scratch/pull/157))
+- **Note management from the terminal** - `scratch list`, `show`, `new`, `edit`, `rm` and `search` (see [Command line](#command-line))
 - **New app icon** - An amber folder with a Markdown note
 
 ## Screenshot
@@ -129,6 +130,32 @@ Scratch is designed to be usable without a mouse. Here are the essentials to get
 **Note:** On Windows, use `Ctrl` instead of `Cmd` for all shortcuts.
 
 Many more shortcuts and features are available in the app—explore via the command palette (`Cmd+P` / `Ctrl+P`) or view the full reference in Settings → Shortcuts.
+
+## Command line
+
+Install the `scratch` command from Settings, then manage notes without opening the app. Changes show up in a running app straight away.
+
+```bash
+scratch                                  # open Scratch Plus
+scratch notes/todo.md                    # open a note (or a folder to make it the notes folder)
+
+scratch list                             # all notes, newest first
+scratch list --folder Work --json        # one folder, as JSON
+scratch search invoice                   # notes whose title or text contains "invoice"
+scratch show "Shopping list"             # print a note
+
+scratch new "Shopping list"              # new note with that title, prints its ID
+echo "- milk" | scratch new "Shopping list" --folder Home --open
+pbpaste | scratch new                    # title taken from the first heading or line
+
+echo "- bread" | scratch edit "Shopping list" --append
+cat draft.md | scratch edit Home/Shopping-list   # replace the whole note
+scratch edit "Shopping list"             # open it in $EDITOR
+
+scratch rm "Shopping list"               # asks first; -f skips the question
+```
+
+A note can be given by its ID (`folder/name`, as printed by `list`), by the path to its `.md` file, or by its title when that is unique. File names follow the title, like in the app. The notes folder comes from `--dir`, `$SCRATCH_NOTES_DIR`, or the folder chosen in the app.
 
 ## Built With
 

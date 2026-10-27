@@ -2,5 +2,8 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
 fn main() {
+    if let Some(code) = scratch_lib::cli::try_run() {
+        std::process::exit(code);
+    }
     scratch_lib::run()
 }

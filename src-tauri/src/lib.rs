@@ -1,3 +1,5 @@
+pub mod cli;
+
 use anyhow::Result;
 use base64::Engine;
 use notify::{Config, RecommendedWatcher, RecursiveMode, Watcher};
@@ -3458,12 +3460,12 @@ fn install_cli() -> Result<String, String> {
         let exe_str = exe_path.to_string_lossy();
         let escaped_exe = format!("'{}'", exe_str.replace('\'', "'\\''"));
 
-        // Write a wrapper script that launches the binary in the background so
-        // the terminal is not blocked waiting for the GUI app to exit.
+        // Note commands (list, new, edit, ...) run in the foreground so their
+        // output reaches the terminal; anything else opens the app.
         let script = format!(
-            "#!/bin/sh\n{}\nnohup {} \"$@\" >/dev/null 2>&1 &\n",
-            SCRATCH_CLI_MARKER,
-            escaped_exe
+            "#!/bin/sh\n{marker}\ncase \"$1\" in\n  list|ls|show|cat|new|edit|rm|search|help|--help|-h) exec {exe} \"$@\" ;;\nesac\nnohup {exe} \"$@\" >/dev/null 2>&1 &\n",
+            marker = SCRATCH_CLI_MARKER,
+            exe = escaped_exe
         );
         std::fs::write(&target, script.as_bytes())
             .map_err(|e| format!("Failed to write CLI script: {}", e))?;
