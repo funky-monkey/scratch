@@ -50,6 +50,8 @@ export type SortOrder =
   | "title-desc"
   | "modified-desc"
   | "modified-asc"
+  | "folder-date-asc"
+  | "folder-date-desc"
   | "manual";
 export type PasteMode = "markdown" | "plain" | "code-block";
 

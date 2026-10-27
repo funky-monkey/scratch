@@ -41,7 +41,7 @@ Merged from open upstream pull requests:
 - **Ollama via its HTTP API** - Fixes duplicated words when editing with Ollama ([#195](https://github.com/erictli/scratch/pull/195))
 - **Back and forward** - Browser-like note history (`Cmd+[` / `Cmd+]`) ([#183](https://github.com/erictli/scratch/pull/183))
 - **Go to note** - Jump to any note by name (`Cmd+G`) ([#186](https://github.com/erictli/scratch/pull/186))
-- **Sidebar sorting** - Sort notes by title (A–Z, Z–A, with natural number order) or last modified (newest or oldest first) in Settings ([#210](https://github.com/erictli/scratch/pull/210))
+- **Sidebar sorting** - Sort notes by title (A–Z, Z–A, with natural number order) last modified (newest or oldest first), or folder based on date (folders ordered by their most recently changed note) in Settings ([#210](https://github.com/erictli/scratch/pull/210))
 - **Manual order with drag and drop** - Drag notes and folders into your own order with animated drop indicators; this switches sorting to "Manual" ([#156](https://github.com/erictli/scratch/pull/156))
 - **Attachments in the sidebar** - Images, PDFs and other files in your notes folder appear in the sidebar with file type icons and a preview ([#153](https://github.com/erictli/scratch/pull/153))
 - **Highlighting** - Mark text with `==text==` ([#214](https://github.com/erictli/scratch/pull/214))

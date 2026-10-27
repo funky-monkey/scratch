@@ -16,6 +16,20 @@ const naturalCollator = new Intl.Collator(undefined, {
 const naturalCompare = (a: string, b: string) =>
   naturalCollator.compare(a, b) || a.localeCompare(b);
 
+// A folder's date is its most recently modified note, subfolders included.
+const folderDates = new WeakMap<FolderNode, number>();
+function folderModified(folder: FolderNode): number {
+  const cached = folderDates.get(folder);
+  if (cached !== undefined) return cached;
+  const latest = Math.max(
+    0,
+    ...folder.notes.map((n) => n.modified),
+    ...folder.children.map(folderModified),
+  );
+  folderDates.set(folder, latest);
+  return latest;
+}
+
 export const SORT_STRATEGIES: Record<SortOrder, SortStrategy> = {
   "title-asc": {
     id: "title-asc",
@@ -37,6 +51,22 @@ export const SORT_STRATEGIES: Record<SortOrder, SortStrategy> = {
     description: "Oldest edited notes appear at the top",
     compareNotes: (a, b) => a.modified - b.modified,
     compareFolders: (a, b) => naturalCompare(a.name, b.name),
+  },
+  "folder-date-asc": {
+    id: "folder-date-asc",
+    label: "Folder based, on date A–Z",
+    description: "Folders and notes from oldest to most recently changed",
+    compareNotes: (a, b) => a.modified - b.modified,
+    compareFolders: (a, b) =>
+      folderModified(a) - folderModified(b) || naturalCompare(a.name, b.name),
+  },
+  "folder-date-desc": {
+    id: "folder-date-desc",
+    label: "Folder based, on date Z–A",
+    description: "Most recently changed folders and notes first",
+    compareNotes: (a, b) => b.modified - a.modified,
+    compareFolders: (a, b) =>
+      folderModified(b) - folderModified(a) || naturalCompare(a.name, b.name),
   },
   manual: {
     id: "manual",
@@ -80,3 +110,4 @@ export function withManualOrder<T>(
     return fallback(a, b);
   };
 }
+
