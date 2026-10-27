@@ -3,6 +3,19 @@ export interface NoteMetadata {
   title: string;
   preview: string;
   modified: number;
+  /** Frontmatter tags. Body `#hashtags` are prose and are not included. */
+  tags: string[];
+}
+
+/**
+ * A folder backed by a tag rather than a directory.
+ *
+ * `name` is the single path segment shown in the sidebar; `tag` may contain
+ * `/` for nested tags such as `area/finance`.
+ */
+export interface SmartFolder {
+  name: string;
+  tag: string;
 }
 
 export type AttachmentKind = "image" | "pdf" | "text" | "file";
@@ -82,7 +95,10 @@ export interface Settings {
   opencodeModel?: string;
   defaultAiProvider?: "claude" | "codex" | "opencode" | "ollama";
   aiSelectionPresets?: { label: string; instruction: string }[];
+  /** Model chosen per AI harness, keyed by provider id. */
+  aiModels?: Record<string, string>;
   ignoredPatterns?: string[];
+  smartFolders?: SmartFolder[];
   customColorsLight?: CustomColors;
   customColorsDark?: CustomColors;
   pasteMode?: PasteMode;
@@ -96,4 +112,6 @@ export interface FolderNode {
   children: FolderNode[];
   notes: NoteMetadata[];
   attachments: AttachmentMetadata[];
+  /** Set when this folder's contents come from a tag query, not from disk. */
+  smartTag?: string;
 }

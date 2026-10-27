@@ -1,10 +1,20 @@
-import type { AttachmentMetadata, NoteMetadata, FolderNode } from "../types/note";
+import type { AttachmentMetadata, NoteMetadata, FolderNode, SmartFolder } from "../types/note";
 import { getSortStrategy, withManualOrder } from "./sorting";
 
 export interface FolderTreeData {
   rootNotes: NoteMetadata[];
   rootAttachments: AttachmentMetadata[];
   folders: FolderNode[];
+}
+
+/** Does a note carry `tag`, or a tag nested beneath it? */
+export function noteMatchesTag(note: NoteMetadata, tag: string): boolean {
+  const needle = tag.toLowerCase();
+  return note.tags.some((raw) => {
+    const candidate = raw.toLowerCase();
+    // `area` also matches `area/finance`, the way nested tags behave elsewhere.
+    return candidate === needle || candidate.startsWith(`${needle}/`);
+  });
 }
 
 export function buildFolderTree(
@@ -15,6 +25,7 @@ export function buildFolderTree(
   sortOrder?: string,
   noteOrder?: string[],
   folderOrder?: string[],
+  smartFolders?: SmartFolder[],
 ): FolderTreeData {
   const strategy = getSortStrategy(sortOrder);
   const manual = strategy.id === "manual";
@@ -98,6 +109,29 @@ export function buildFolderTree(
   topLevelFolders.sort(folderComparator);
   topLevelFolders.forEach(sortNode);
 
+  // Smart folders resolve against the same `notes` array the tree was built
+  // from, so they stay current without any extra refresh: whenever notes
+  // change, this runs again. A note can appear in several of them, and in a
+  // real folder too — they are views, not locations.
+  const smartNodes: FolderNode[] = (smartFolders ?? []).map((smart) => {
+    const matched = notes.filter((note) => noteMatchesTag(note, smart.tag));
+    matched.sort((a, b) => {
+      const ap = pinnedIds.has(a.id);
+      const bp = pinnedIds.has(b.id);
+      if (ap !== bp) return ap ? -1 : 1;
+      return b.modified - a.modified;
+    });
+    return {
+      name: smart.name,
+      path: smart.name,
+      children: [],
+      notes: matched,
+      attachments: [],
+      smartTag: smart.tag,
+    };
+  });
+  smartNodes.sort((a, b) => a.name.localeCompare(b.name));
+
   // Sort root notes: pinned first, then by strategy
   rootNotes.sort((a, b) => {
     const ap = pinnedIds.has(a.id);
@@ -107,7 +141,8 @@ export function buildFolderTree(
   });
   rootAttachments.sort((a, b) => a.name.localeCompare(b.name));
 
-  return { rootNotes, rootAttachments, folders: topLevelFolders };
+  // Smart folders sit above real ones so the views you defined lead.
+  return { rootNotes, rootAttachments, folders: [...smartNodes, ...topLevelFolders] };
 }
 
 export type TreeItem =

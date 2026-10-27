@@ -17,6 +17,9 @@ export { CodeCopyButton } from "./CodeCopyButton";
 export { Input } from "./Input";
 export { Textarea } from "./Textarea";
 export { Select } from "./Select";
+export { TextEffect } from "./TextEffect";
+export { TextScramble } from "./TextScramble";
+export { TextShimmer } from "./TextShimmer";
 export { Toaster } from "./Toaster";
 export {
   AlertDialog,
