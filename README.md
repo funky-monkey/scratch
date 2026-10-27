@@ -8,6 +8,8 @@ A minimalist, offline-first markdown note-taking app for macOS, Windows, and Lin
 
 [Website](https://www.ericli.io/scratch) · [Releases](https://github.com/erictli/scratch/releases)
 
+> **This is a community fork** of [erictli/scratch](https://github.com/erictli/scratch) that merges open pull requests from the upstream repository. See [What this fork adds](#what-this-fork-adds) for the list.
+
 ## Features
 
 - **Offline-first** - No cloud, no account, no internet required
@@ -28,6 +30,28 @@ A minimalist, offline-first markdown note-taking app for macOS, Windows, and Lin
 - **Customizable** - Theme, typography, page width, and RTL text direction
 - **Git integration** - Optional version control with push/pull for multi-device sync
 - **Lightweight** - 5-10x smaller than Obsidian or Notion
+
+### What this fork adds
+
+Merged from open upstream pull requests:
+
+- **AI sidebar** - Chat with Claude Code, Codex, OpenCode or Ollama about the open note in a side panel, with a model choice per provider (`Cmd+Shift+A`) ([#213](https://github.com/erictli/scratch/pull/213))
+- **Smart folders** - Create a folder whose name starts with `#` (for example `#area/finance`) to get a live view of every note with that tag ([#213](https://github.com/erictli/scratch/pull/213))
+- **Edit a selection with AI** - Select text and let AI rewrite just that part from the editor toolbar, with reusable presets ([#166](https://github.com/erictli/scratch/pull/166))
+- **Ollama via its HTTP API** - Fixes duplicated words when editing with Ollama ([#195](https://github.com/erictli/scratch/pull/195))
+- **Back and forward** - Browser-like note history (`Cmd+[` / `Cmd+]`) ([#183](https://github.com/erictli/scratch/pull/183))
+- **Go to note** - Jump to any note by name (`Cmd+G`) ([#186](https://github.com/erictli/scratch/pull/186))
+- **Sidebar sorting** - Sort notes by title (A–Z, Z–A, with natural number order) or last modified (newest or oldest first) in Settings ([#210](https://github.com/erictli/scratch/pull/210))
+- **Manual order with drag and drop** - Drag notes and folders into your own order with animated drop indicators; this switches sorting to "Manual" ([#156](https://github.com/erictli/scratch/pull/156))
+- **Attachments in the sidebar** - Images, PDFs and other files in your notes folder appear in the sidebar with file type icons and a preview ([#153](https://github.com/erictli/scratch/pull/153))
+- **Highlighting** - Mark text with `==text==` ([#214](https://github.com/erictli/scratch/pull/214))
+- **GitHub-style alerts** - `> [!NOTE]`, `[!TIP]`, `[!IMPORTANT]`, `[!WARNING]` and `[!CAUTION]` blockquotes ([#174](https://github.com/erictli/scratch/pull/174))
+- **Better code blocks** - Type three backticks plus a language and press `Enter`, or press `Cmd+Option+C`, to start a code block ([#205](https://github.com/erictli/scratch/pull/205))
+- **Paste mode** - Choose whether pasted text is parsed as Markdown, pasted as plain text, or wrapped in a code block ([#162](https://github.com/erictli/scratch/pull/162))
+- **Clipboard formats** - Copying puts both plain text and Markdown on the clipboard, so other apps paste it correctly ([#193](https://github.com/erictli/scratch/pull/193))
+- **Spell check and autocorrect settings** - Turn either on or off ([#206](https://github.com/erictli/scratch/pull/206))
+- **Custom commit messages** - Write your own message when committing with Git ([#157](https://github.com/erictli/scratch/pull/157))
+- **New app icon** - An amber folder with a Markdown note
 
 ## Screenshot
 
@@ -60,12 +84,14 @@ Download the latest `.AppImage` or `.deb` from [Releases](https://github.com/eri
 
 ### From Source
 
+The installers above are the upstream version. To get the features of this fork, build it from source.
+
 **Prerequisites:** Node.js 18+, Rust 1.70+
 
 **macOS:** Xcode Command Line Tools · **Windows:** WebView2 Runtime (pre-installed on Windows 11)
 
 ```bash
-git clone https://github.com/erictli/scratch.git
+git clone https://github.com/funky-monkey/scratch.git
 cd scratch
 npm install
 npm run tauri dev      # Development
@@ -92,6 +118,10 @@ Scratch is designed to be usable without a mouse. Here are the essentials to get
 | `Cmd+R`           | Reload current note    |
 | `Cmd+,`           | Open settings          |
 | `Cmd+\`           | Toggle sidebar         |
+| `Cmd+G`           | Go to note             |
+| `Cmd+[` / `Cmd+]` | Back / forward         |
+| `Cmd+Shift+A`     | AI sidebar             |
+| `Cmd+Option+C`    | Code block             |
 | `Cmd+B/I`         | Bold/Italic            |
 | `Cmd+=/-/0`       | Zoom in/out/reset      |
 | `↑/↓`             | Navigate notes         |
