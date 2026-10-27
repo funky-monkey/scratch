@@ -74,7 +74,7 @@ import { WikilinkSuggestion } from "./WikilinkSuggestion";
 import { EditorWidthHandles } from "./EditorWidthHandle";
 import { ScratchBlockMath, normalizeBlockMath } from "./MathExtensions";
 import { AlertBlockquote, ALERT_TYPES, ALERT_META } from "./AlertBlockquote";
-import { cn } from "../../lib/utils";
+import { cn, formatDateTime } from "../../lib/utils";
 import { plainTextFromMarkdown } from "../../lib/plainText";
 import { Button, IconButton, ToolbarButton, Tooltip } from "../ui";
 import * as notesService from "../../services/notes";
@@ -236,17 +236,6 @@ const ScratchCodeBlock = CodeBlockLowlight.extend({
   },
 });
 
-function formatDateTime(timestamp: number): string {
-  const date = new Date(timestamp * 1000);
-  return date.toLocaleDateString(undefined, {
-    weekday: "short",
-    month: "short",
-    day: "numeric",
-    year: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-  });
-}
 
 function focusAndSelectTitle(editor: TiptapEditor): boolean {
   let titleFrom = -1;

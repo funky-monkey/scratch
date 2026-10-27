@@ -68,3 +68,15 @@ export function formatNoteDate(timestamp: number): string {
     year: "numeric",
   });
 }
+
+/** Full date and time, e.g. "Tue, Oct 27, 2026, 2:05 PM". */
+export function formatDateTime(timestamp: number): string {
+  return new Date(timestamp * 1000).toLocaleDateString(undefined, {
+    weekday: "short",
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}

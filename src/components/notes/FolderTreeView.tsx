@@ -10,7 +10,7 @@ import {
   type TreeItem,
 } from "../../lib/folderTree";
 import { FolderNameDialog } from "./FolderNameDialog";
-import { cleanTitle, formatNoteDate } from "../../lib/utils";
+import { cleanTitle, formatDateTime } from "../../lib/utils";
 import { toast } from "sonner";
 import {
   AlertDialog,
@@ -189,7 +189,7 @@ const FileItem = memo(function FileItem({
             }}
             {...attributes}
             {...listeners}
-            className={`relative flex items-center gap-1.5 py-1.5 cursor-pointer rounded-md select-none transition-[opacity,background-color,scale] duration-200 group/fileitem ${
+            className={`relative flex items-start gap-1.5 py-1.5 cursor-pointer rounded-md select-none transition-[opacity,background-color,scale] duration-200 group/fileitem ${
               isDragging
                 ? "opacity-30 scale-[0.97] pointer-events-none"
                 : isSelected &&
@@ -207,18 +207,27 @@ const FileItem = memo(function FileItem({
             {/* Sleek edge grab pill bar, visible on hover */}
             <div className="absolute left-[3px] top-1/2 -translate-y-1/2 w-[3px] h-5 rounded-full bg-accent/40 opacity-0 group-hover/fileitem:opacity-100 transition-opacity duration-150 pointer-events-none z-10" />
             {isPinned ? (
-              <PinIcon className="w-4 h-4 stroke-[1.6] fill-current text-text-muted shrink-0" />
+              <PinIcon className="w-4 h-4 mt-0.5 stroke-[1.6] fill-current text-text-muted shrink-0" />
             ) : (
-              <NoteIcon className="w-4 h-4 stroke-[1.6] opacity-50 shrink-0" />
+              <NoteIcon className="w-4 h-4 mt-0.5 stroke-[1.6] opacity-50 shrink-0" />
             )}
-            <span
-              className={`text-sm text-text truncate ${isSelected ? "font-semibold" : ""}`}
-            >
-              {cleanTitle(note.title)}
-            </span>
-            <span className="ml-auto pl-2 text-xs text-text-muted shrink-0 tabular-nums">
-              {formatNoteDate(note.modified)}
-            </span>
+            <div className="min-w-0 flex-1">
+              <div
+                className={`text-sm text-text truncate ${isSelected ? "font-semibold" : ""}`}
+              >
+                {cleanTitle(note.title)}
+              </div>
+              {note.preview && (
+                <div className="text-xs text-text-muted truncate">
+                  {note.preview}
+                </div>
+              )}
+              <div className="text-xs text-text-muted/70 truncate tabular-nums">
+                {note.id.includes("/")
+                  ? `${note.id.substring(0, note.id.lastIndexOf("/"))} (${formatDateTime(note.modified)})`
+                  : formatDateTime(note.modified)}
+              </div>
+            </div>
           </div>
         </div>
       </ContextMenu.Trigger>
